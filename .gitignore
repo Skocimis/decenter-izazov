@@ -1,9 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-front/node_modules
+node_modules
 front/.pnp
 .pnp.js
+.env
 
 # testing
 front/coverage
@@ -22,4 +23,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-front/package-lock.json
+package-lock.json
+
+contract/cdp-view/cache
+contract/cdp-view/artifacts
+
+# TypeChain files
+contract/cdp-view/typechain
+contract/cdp-view/typechain-types
+
+# solidity-coverage files
+contract/cdp-view/coverage
+contract/cdp-view/coverage.json
