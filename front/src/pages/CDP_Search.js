@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import async from 'async';
 import Web3 from 'web3';
-import { getIlkInfo } from '@defisaver/tokens';
-
+import './cdp.css'
+import CdpSearchInput from '../components/CdpSearchInput';
 const tokens = ["ETH-A", "WBTC-A", "USDC-A"]
 const contractAddress = '0x68C61AF097b834c68eA6EA5e46aF6c04E8945B2d'; // Adresa MakerDAO contracta
 const rateContractAddress = '0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B'
@@ -73,18 +73,7 @@ const rateContractABI = [
         "type": "function"
     },
 ]
-function getId(rough, relative) {
-  if (relative >= 2 * rough + 2) {
-    return relative;
-  }
 
-  const p = parseInt(rough);
-  return (relative % 2 === 0) ? (p - relative / 2) : (p + (relative + 1) / 2);
-}
-
-function sortCriterium(a, b) {
-  return a.id - b.id;
-}
 
 const POS_N = 20;
 
@@ -94,6 +83,7 @@ function CDP_Search() {
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [roughCdpId, setRoughCdpId] = useState("11015");
   const [positions, setPositions] = useState([]);
+  const [cdpIdOutOfRange, setCdpIdOutOfRange] = useState(false)
   const queue = useRef(null);
   const last_pushed = useRef(-1);
 
@@ -101,8 +91,28 @@ function CDP_Search() {
     queue.current = async.queue(fetch_position, 5);
     return () => queue.current.kill();
   }, [])
+  function getId(rough, relative) {
+    if (relative >= 2 * rough + 2) {
+      return relative;
+    }
+  
+    const p = parseInt(rough);
+    if(cdpIdOutOfRange)
+    {
+        return p - relative
+    }
+    return (relative % 2 === 0) ? (p - relative / 2) : (p + (relative + 1) / 2);
+  }
+  
+  function sortCriterium(a, b) {
+    return a.id - b.id;
+  }
   async function fetch_position(data) {
     const currentPositionData = await fetchData(data.id)
+
+    if(currentPositionData.urn == '0x0000000000000000000000000000000000000000')
+            setCdpIdOutOfRange(true)
+
     if (hexToAsciiStr(currentPositionData.ilk).trim() != selectedToken) {
     const new_pushed = last_pushed.current = last_pushed.current + 1;
     queue.current.push({ id: getId(data.cdpId, new_pushed), relative: new_pushed, cdpId: data.cdpId  });
@@ -114,8 +124,11 @@ function CDP_Search() {
   const result =  { id: data.id, collateral: weiToEthString(currentPositionData.collateral), amount: 1, debt: debt.toFixed(2), relative: data.relative };
   setPositions(e => {
     if (e.length >= POS_N)
+    {
+        setCdpIdOutOfRange(false)
       return e;
-    if (e.length == 0)
+    }
+      if (e.length == 0)
       return [{ ...result, first: true }];
 
     const arr = [...e, result];
@@ -202,14 +215,24 @@ function CDP_Search() {
     return high > 0 ? high : 0;
   }
   return (
-    <div>
-      <select
-        value={selectedToken}
-        onChange={e => setSelectedToken(e.target.value)}
-      >
-        {tokens.map(e => <option value={e}>{e}</option>)}
-      </select>
-      <input type='text' value={roughCdpId} onChange={e => setRoughCdpId(e.target.value)}></input>
+    <div className='cdp-div'>
+        <div className='cdp-div-outer'></div>
+        <div className='cdp-div-center'>
+            <div className='cdp-div-center-top'>
+            <div className="form-control">
+  <select
+    className="input input-alt" // Use both 'input' and 'input-alt' classes for styling
+    value={selectedToken}
+    onChange={e => setSelectedToken(e.target.value)}
+  >
+    {tokens.map(e => <option key={e} value={e} style={{color:'white'}}>{e}</option>)}
+  </select>
+  <div className="input-border input-border-alt"></div> {/* This div is for the animated border */}
+</div>
+            <CdpSearchInput roughCdpId={roughCdpId} setRoughCdpId={setRoughCdpId}  />
+
+            </div>
+      
       <button onClick={async () => {
         setPositions(_ => []);
         if (queue.current) {
@@ -221,8 +244,8 @@ function CDP_Search() {
 
         var lastCdpId = roughCdpId;
             if (id.urn == '0x0000000000000000000000000000000000000000') {
+                setCdpIdOutOfRange(true)
                 lastCdpId = await getLastExistingCpId(roughCdpId);
-                setRoughCdpId(lastCdpId)
             }
 
             for (let i = 0; i < POS_N; i++) {
@@ -231,14 +254,31 @@ function CDP_Search() {
             }
 
       }}>Load positions</button>
-        <button onClick={()=>fetchData(roughCdpId)}>Dohvati CDP Podatke</button>
 
-      {positions.map(e => 
-      <div>
-        <a>Id: {e.id}</a>
-        <a>Collateral: {e.collateral}</a>
-        <a>Debt: {e.debt}</a>
-        </div>)}
+<div className="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Collateral</th>
+        <th>Debt</th>
+      </tr>
+    </thead>
+    <tbody>
+      {positions.map(e => (
+        <tr key={e.id}>
+          <td>{e.id}</td>
+          <td>{e.collateral}</td>
+          <td>{e.debt}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+        </div>
+        <div className='cdp-div-outer'></div>
+
     </div>
   );
 }

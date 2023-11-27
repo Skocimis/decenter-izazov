@@ -1,0 +1,76 @@
+.cdp-div{
+    width: 100%;
+    height: 100vh;
+   /* Add your background pattern here */
+   background-color: #313131;
+   background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
+   background-size: 30px 30px;
+   background-position: -5px -5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    overflow-y: scroll;
+      
+}
+.cdp-div-center {
+    flex:7;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background-color: transparent;
+}
+.cdp-div-center-top{
+width: 100%;
+height: 25%;
+display: flex;
+flex-direction: row;
+justify-content:center;
+align-items:center;
+background-color: transparent;
+
+}
+.cdp-div-center-middle{
+
+}
+.cdp-div-center-bottom{
+
+}
+.cdp-div-outer {
+    flex:3
+}
+/* table */
+.table-container {
+    background-color: #1e1e1e; /* Dark background for the futuristic feel */
+    padding: 1rem;
+    border-radius: 10px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  table thead th {
+    background-color: transparent;
+    color: #00ffff; /* Neon text color */
+    padding: 10px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+  
+  table tbody td {
+    color: #fff;
+    padding: 8px;
+    border-bottom: 1px solid #272727;
+    font-size: 0.9rem;
+  }
+  
+  table tbody tr:nth-child(odd) {
+    background-color: rgba(45, 45, 45, 0.215);
+  }
+  
+  table tbody tr:hover {
+    background-color: #303030;
+  }
+  
