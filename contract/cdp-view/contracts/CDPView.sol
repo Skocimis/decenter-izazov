@@ -105,8 +105,12 @@ contract CDPView is DSMath {
 
         (collateral, debt) = vat.urns(ilk, urn);
 
-        (, uint rate, , , ) = vat.ilks(ilk);
-
+        uint rate;
+        if (debt == 0) {
+            rate = 0;
+        } else {
+            (, rate, , , ) = vat.ilks(ilk);
+        }
         debtWithInterest = (debt * rate) / RAY;
     }
 }

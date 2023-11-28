@@ -1,0 +1,88 @@
+{
+  "address": "0x19b3288bbae81def435800e1cefcd031d0c147b7",
+  "network": {
+    "chainId": "0x1",
+    "chainName": "Mojfork (Mainnet)",
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "rpcUrls": [
+      "https://rpc.tenderly.co/fork/2cd524d5-c829-464c-98f1-2ff5e4852987"
+    ],
+    "blockExplorerUrls": [
+      "https://etherscan.io/"
+    ]
+  },
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "_getProxyOwner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "userAddr",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_cdpId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCdpInfo",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "urn",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "userAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ilk",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "collateral",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "debt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "debtWithInterest",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}
