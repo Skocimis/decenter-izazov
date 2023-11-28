@@ -3,83 +3,14 @@ import async from 'async';
 import Web3 from 'web3';
 import './cdp.css'
 import CdpSearchInput from '../components/CdpSearchInput';
+import Contract from '../data/Contract.json'
+
 const tokens = ["ETH-A", "WBTC-A", "USDC-A"]
-const contractAddress = '0x68C61AF097b834c68eA6EA5e46aF6c04E8945B2d'; // Adresa MakerDAO contracta
-const rateContractAddress = '0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B'
-
-const contractABI = [
-    {
-      "inputs": [{"internalType": "address", "name": "owner", "type": "address"}],
-      "name": "_getProxyOwner",
-      "outputs": [{"internalType": "address", "name": "userAddr", "type": "address"}],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{"internalType": "uint256", "name": "_cdpId", "type": "uint256"}],
-      "name": "getCdpInfo",
-      "outputs": [
-        {"internalType": "address", "name": "urn", "type": "address"},
-        {"internalType": "address", "name": "owner", "type": "address"},
-        {"internalType": "address", "name": "userAddr", "type": "address"},
-        {"internalType": "bytes32", "name": "ilk", "type": "bytes32"},
-        {"internalType": "uint256", "name": "collateral", "type": "uint256"},
-        {"internalType": "uint256", "name": "debt", "type": "uint256"}
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
-  ];
-const rateContractABI = [
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "",
-                "type": "bytes32"
-            }
-        ],
-        "name": "ilks",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "Art",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rate",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "spot",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "line",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "dust",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-]
-
 
 const POS_N = 20;
 
 
 function CDP_Search() {
-    const [cdpData, setCdpData] = useState(null);
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [roughCdpId, setRoughCdpId] = useState("11015");
   const [positions, setPositions] = useState([]);
@@ -118,10 +49,7 @@ function CDP_Search() {
     queue.current.push({ id: getId(data.cdpId, new_pushed), relative: new_pushed, cdpId: data.cdpId  });
     return;
   }
-
-  var debt = weiToDebtString(await fetchRateForIlk(currentPositionData.ilk)) * weiToEthString(currentPositionData.debt)
-
-  const result =  { id: data.id, collateral: weiToEthString(currentPositionData.collateral), amount: 1, debt: debt.toFixed(2), relative: data.relative };
+  const result =  { id: data.id, collateral: weiToEthString(currentPositionData.collateral), amount: 1, debt: weiToEthString(currentPositionData.debtWithInterest), relative: data.relative };
   setPositions(e => {
     if (e.length >= POS_N)
     {
@@ -142,11 +70,14 @@ function CDP_Search() {
   const fetchData = async (id) => {
     try {
       if (window.ethereum) {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [Contract.network]
+        });
   
         const web3 = new Web3(window.ethereum);
   
-        const contract = new web3.eth.Contract(contractABI, contractAddress);
+        const contract = new web3.eth.Contract(Contract.abi, Contract.address);
   
         const data = await contract.methods.getCdpInfo(id).call();
         return data
@@ -156,21 +87,6 @@ function CDP_Search() {
       }
     } catch (error) {
       console.error('Error fetching CDP data:', error);
-    }
-  };
-  const fetchRateForIlk = async (ilk) => {
-    try {
-      const web3 = new Web3(window.ethereum);
-      
-      const rateContract = new web3.eth.Contract(rateContractABI, rateContractAddress);
-      
-     
-      const result = await rateContract.methods.ilks(ilk).call();
-  
-      return result.rate;
-    } catch (error) {
-      console.error('Error fetching rate for ilk:', error);
-      throw error;
     }
   };
   function hexToAsciiStr(hexStr) {
