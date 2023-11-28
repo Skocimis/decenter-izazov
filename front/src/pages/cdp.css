@@ -2,10 +2,21 @@
     width: 100%;
     height: 100vh;
    /* Add your background pattern here */
-   background-color: #313131;
-   background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
-   background-size: 30px 30px;
-   background-position: -5px -5px;
+   background: #121212; /* Fallback for browsers that don't support gradients */
+   background: linear-gradient(
+     135deg,
+     #121212 25%,
+     #1a1a1a 25%,
+     #1a1a1a 50%,
+     #121212 50%,
+     #121212 75%,
+     #1a1a1a 75%,
+     #1a1a1a
+   );
+   background-size: 40px 40px;
+ 
+   /* Animation */
+   animation: move 4s linear infinite;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,6 +24,29 @@
     overflow-y: scroll;
       
 }
+/* Total scrollbar styling */
+::-webkit-scrollbar {
+    width: 12px; /* width of the entire scrollbar */
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #111; /* color of the tracking area */
+    border-radius: 10px; /* roundness of the track */
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(96, 96, 96); /* neon green color for the thumb */
+    border-radius: 10px; /* roundness of the thumb */
+    border: 3px solid #111; /* creates padding around the thumb */
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(178, 245, 101); /* slightly lighter neon green color on hover */
+  }
+  
 .cdp-div-center {
     flex:7;
     justify-content: center;
@@ -31,7 +65,10 @@ background-color: transparent;
 
 }
 .cdp-div-center-middle{
-
+display: flex;
+justify-content:center;
+align-items:center;
+flex-direction: column;
 }
 .cdp-div-center-bottom{
 
@@ -41,36 +78,60 @@ background-color: transparent;
 }
 /* table */
 .table-container {
-    background-color: #1e1e1e; /* Dark background for the futuristic feel */
     padding: 1rem;
-    border-radius: 10px;
+    max-height: 80vh;
+    margin-bottom:10px
   }
   
   table {
-    width: 100%;
+    width: 60vw;
     border-collapse: collapse;
+    max-height: 80%;
+    overflow-y: scroll;
+  }
+  
+  table thead {
+    background-color: transparent; /* Dark background for header */
+    margin-bottom: 10px
+  }
+  
+  table thead tr {
+    border-bottom: 5px solid rgb(178, 245, 101)/* Neon accent line */
   }
   
   table thead th {
-    background-color: transparent;
-    color: #00ffff; /* Neon text color */
-    padding: 10px;
-    font-size: 0.9rem;
+    color: #ffffff; /* Neon text color for headings */
+    padding: 15px 10px;
+    text-align: left;
+    font-size: 1rem;
     letter-spacing: 1px;
+    font-weight: normal; /* For a more minimalist look, avoid bold fonts */
+    font-family: 'Inconsolata', monospace;
   }
+  
   
   table tbody td {
     color: #fff;
-    padding: 8px;
     border-bottom: 1px solid #272727;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    padding: 11px;
+  }
+  table tbody tr{
+    font-size: 1.3em;
+  }
+  table tbody tr:nth-child(odd) {
+    background-color: #1a1a1a ; /* Color for odd rows */
+    font-family: 'Inconsolata', monospace;
+
   }
   
-  table tbody tr:nth-child(odd) {
-    background-color: rgba(45, 45, 45, 0.215);
+  table tbody tr:nth-child(even) {
+    background-color: #121212 ; /* Color for even rows */
+    font-family: 'Inconsolata', monospace;
+
   }
   
   table tbody tr:hover {
-    background-color: #303030;
+    background-color: #303030; /* Hover color for all rows */
   }
   
