@@ -2,7 +2,7 @@ import "./cdpView.css";
 import { prettyFormat, formatBigNumber, formatOwner } from "../util/NumberFormat"
 
 const PRICING = {
-    "ETH-A": { price: 2054.52, ratio: 1.45 },
+    "ETH-A": { price: 2049.20, ratio: 1.45 },
     "WBTC-A": { price: 38194.63, ratio: 1.45 },
     "USDC-A": { price: 1, ratio: 1.01 }
 }
