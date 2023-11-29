@@ -227,20 +227,10 @@ function CDP_Search() {
     if (queue.current) {
       queue.current.kill();
     }
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> aad9f5b83fa13d6741c141d8b2aedfa12058f185
     if (timer) {
       clearTimeout(timer);
       setTimer(null);
     }
-<<<<<<< HEAD
-  
-   
-=======
->>>>>>> aad9f5b83fa13d6741c141d8b2aedfa12058f185
   }
 
 

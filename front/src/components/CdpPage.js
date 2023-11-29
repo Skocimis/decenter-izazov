@@ -19,10 +19,6 @@ function CdpPage({ cdp, isMobileNow, mobile, setOpenCDP }) {
             }
       
             const message = "Ovo je moj CDP";
-<<<<<<< HEAD
-=======
-
->>>>>>> aad9f5b83fa13d6741c141d8b2aedfa12058f185
             const from = accounts[0];
             if (!from) {
               throw new Error("Adresa naloga nije pronađena.");
