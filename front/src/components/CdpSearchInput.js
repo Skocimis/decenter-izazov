@@ -15,7 +15,7 @@ function CdpSearchInput(
   class="input input-alt" 
   placeholder="Type CPID of the position" 
   required="" 
-  type="text" 
+  type="number" 
   value={roughCdpId}
   onChange={e => handleInputChange(e.target.value,curToken)}
     />

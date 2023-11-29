@@ -68,6 +68,7 @@ function CDP_Search() {
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(null);
 
+  const stopSearchRef = useRef(0)
   const cdpIdOutOfRange = useRef(0);
   const queue = useRef(null);
   const last_pushed = useRef(-1);
@@ -119,6 +120,8 @@ function CDP_Search() {
   }
 
   async function fetch_position(data) {
+    if(stopSearchRef.current==1)
+    return
     if (data.id <= 0) cdpIdOutOfRange.current = 2;
     const currentPositionData = await fetchData(data.id);
 
@@ -167,6 +170,7 @@ function CDP_Search() {
   }
   console.log(screenWidth);
   const fetchData = async (id) => {
+    console.log(id + " fetchujem")
     try {
       if (window.ethereum) {
         await window.ethereum.request({
@@ -188,6 +192,7 @@ function CDP_Search() {
   };
 
   const startSearch = async (curId, curToken) => {
+    stopSearchRef.current = 0
     setLoading(true);
     setPositions([]);
     if (queue.current) {
@@ -251,14 +256,26 @@ function CDP_Search() {
     return high > 0 ? high : 0;
   }
 
-  function cancelSearch() {
+  function stopSearch() {
+    // Stop loading and reset positions
     setLoading(false);
-    setPositions([]);
-    cdpIdOutOfRange.current = 0
+    cdpIdOutOfRange.current = 0;
+    stopSearchRef.current = 1
+    // Clear the queue to stop any ongoing search
     if (queue.current) {
-      queue.current.kill(); // This clears the queue
+      queue.current.kill();
     }
+  
+    // Reset the timer to prevent delayed search execution
+    if (timer) {
+      clearTimeout(timer);
+      setTimer(null);
+    }
+  
+    // Optionally, reset any other states or variables related to the search
+    // ...
   }
+  
 
   return (
     <div className='cdp-div'>
@@ -279,7 +296,7 @@ function CDP_Search() {
             <div className="input-border input-border-alt"></div>
           </div>
           <CdpSearchInput roughCdpId={roughCdpId} setRoughCdpId={setRoughCdpId} handleInputChange={handleInputChange} curToken={selectedToken} />
-          {loading && <CancelButton onClick={cancelSearch} />}
+          {loading && <CancelButton onClick={stopSearch} />}
         </div>
 
         <div className="cdp-div-center-middle">
@@ -302,7 +319,7 @@ function CDP_Search() {
                 {positions.map(position => (
                   <tr onClick={() => {
                     setOpenCDP((position.id == openCDP?.id) ? null : position);
-                  }} key={position.id} style={{ cursor: "pointer" }}>
+                  }} key={position.id} style={{ cursor: "pointer",backgroundColor:((openCDP && openCDP.id) && position.id==openCDP.id)?"black":""}}>
                     <td>{position.id}</td>
                     {(screenWidth > 330) && <td>{formatBigNumber(position.collateral, 2)} {selectedToken}</td>}
                     {(screenWidth > 930) && <td>{formatCurrency((position.collateral * tokenPrices[selectedToken]).toFixed(0))}$</td>}
