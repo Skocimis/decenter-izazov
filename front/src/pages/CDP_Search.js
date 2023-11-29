@@ -201,7 +201,7 @@ function CDP_Search() {
 
     const newTimer = setTimeout(() => {
       startSearch(value, curToken);
-    }, 500);
+    }, 1000);
 
     setTimer(newTimer);
   };
