@@ -56,7 +56,7 @@ function CdpPage({ cdp, isMobileNow, mobile, setOpenCDP }) {
             fontWeight: "bold",
             cursor: "pointer",
             boxShadow: "0 0 10px rgba(0, 255, 0, 0.5)", 
-            margin: "10px 0",
+            margin: "10px",
             fontFamily: "monospace",
             transition: "background-color 0.3s, color 0.3s", 
         }}
@@ -69,7 +69,6 @@ function CdpPage({ cdp, isMobileNow, mobile, setOpenCDP }) {
             padding: "10px",
             margin: "10px 0",
             borderRadius: "5px",
-            boxShadow: "0 0 10px rgba(0, 255, 0, 0.5)", 
         }}>
             <h3 style={{ textAlign: "center", fontFamily: "monospace" }}>Signature:</h3>
             <p style={{ wordWrap: "break-word", fontFamily: "monospace" }}>{signature}</p>

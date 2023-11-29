@@ -149,8 +149,9 @@ function CDP_Search() {
         const data = await contract.methods.getCdpInfo(id).call();
         return data;
       } else {
-        alert("Molimo Vas aktivirajte Metamask");
+        alert("Activate Metamask to continue");
         console.error('Metamask nije detektovan');
+        return
       }
     } catch (error) {
       console.error('Error fetching CDP data:', error);
@@ -159,16 +160,19 @@ function CDP_Search() {
 
   const startSearch = async (curId, curToken) => {
     stopSearchRef.current = 0
+    const id = await fetchData(curId);
+   
+    if(!id)
+    {return;}
+
     setLoading(true);
     setPositions([]);
     if (queue.current) {
       queue.current.kill();
     }
     queue.current = async.queue(fetch_position, 5);
-
-    const id = await fetchData(curId);
     var lastCdpId = curId;
-
+    
     if (id.urn === '0x0000000000000000000000000000000000000000') {
       cdpIdOutOfRange.current = 1;
       lastCdpId = await getLastExistingCpId(lastCdpId);
