@@ -223,17 +223,15 @@ function CDP_Search() {
     setRoughCdpId(value);
     cdpIdOutOfRange.current = 0;
 
-    // Clear any existing timer to reset the debounce period
     if (timer) clearTimeout(timer);
 
     if (!curToken) curToken = selectedToken;
 
-    // Set a new timer
     if (!value || value.length === 0) return;
 
     const newTimer = setTimeout(() => {
       startSearch(value, curToken);
-    }, 500); // Delay in milliseconds
+    }, 500); 
 
     setTimer(newTimer);
   };
@@ -257,23 +255,19 @@ function CDP_Search() {
   }
 
   function stopSearch() {
-    // Stop loading and reset positions
     setLoading(false);
     cdpIdOutOfRange.current = 0;
     stopSearchRef.current = 1
-    // Clear the queue to stop any ongoing search
     if (queue.current) {
       queue.current.kill();
     }
   
-    // Reset the timer to prevent delayed search execution
     if (timer) {
       clearTimeout(timer);
       setTimer(null);
     }
   
-    // Optionally, reset any other states or variables related to the search
-    // ...
+   
   }
   
 
