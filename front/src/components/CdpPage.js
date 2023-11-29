@@ -8,7 +8,6 @@ function CdpPage({ cdp, isMobileNow, mobile, setOpenCDP }) {
     async function signMessage() {
         if (window.ethereum) {
           try {
-            // Zahtev za povezivanje sa MetaMask-om
             await window.ethereum.request({ method: 'eth_requestAccounts' });
       
             const web3 = new Web3(window.ethereum);
@@ -20,15 +19,14 @@ function CdpPage({ cdp, isMobileNow, mobile, setOpenCDP }) {
             }
       
             const message = "Ovo je moj CDP";
-            // Proverite da li je adresa korisnika prisutna
+
             const from = accounts[0];
             if (!from) {
               throw new Error("Adresa naloga nije pronađena.");
             }
       
-            const signature = await web3.eth.personal.sign(message, from, ''); // Dodajte prazan string za lozinku
+            const signature = await web3.eth.personal.sign(message, from, ''); 
       
-            console.log("Potpisana poruka:", signature);
             return signature;
           } catch (error) {
             console.error("Greška prilikom potpisivanja poruke:", error);
@@ -50,29 +48,29 @@ function CdpPage({ cdp, isMobileNow, mobile, setOpenCDP }) {
             <button 
         onClick={handleSignMessage}
         style={{
-            backgroundColor: "rgb(178, 245, 101)", // Neon green background
-            color: "#101010", // Dark text color
+            backgroundColor: "rgb(178, 245, 101)", 
+            color: "#101010", 
             border: "none",
             borderRadius: "5px",
             padding: "10px 20px",
             fontSize: "1em",
             fontWeight: "bold",
             cursor: "pointer",
-            boxShadow: "0 0 10px rgba(0, 255, 0, 0.5)", // Neon glow effect
-            margin: "10px 0", // Spacing
+            boxShadow: "0 0 10px rgba(0, 255, 0, 0.5)",
+            margin: "10px 0",
             fontFamily: "monospace",
-            transition: "background-color 0.3s, color 0.3s", // Smooth transition for hover effect
+            transition: "background-color 0.3s, color 0.3s", 
         }}
     >
         Sign message
     </button>    {signature && (
         <div style={{
-            backgroundColor: "#202020", // Dark background
-            color: "rgb(178, 245, 101)", // Neon green text
+            backgroundColor: "#202020",
+            color: "rgb(178, 245, 101)",
             padding: "10px",
             margin: "10px 0",
             borderRadius: "5px",
-            boxShadow: "0 0 10px rgba(0, 255, 0, 0.5)", // Neon glow effect
+            boxShadow: "0 0 10px rgba(0, 255, 0, 0.5)"
         }}>
             <h3 style={{ textAlign: "center", fontFamily: "monospace" }}>Signature:</h3>
             <p style={{ wordWrap: "break-word", fontFamily: "monospace" }}>{signature}</p>

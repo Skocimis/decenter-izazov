@@ -3,9 +3,9 @@ const { ethers } = require('ethers');
 const getDebt = (debt) => Number(debt) / Number(BigInt(1e18));
 
 async function main() {
-    const provider = new ethers.JsonRpcProvider("http://localhost:8545");
+    const provider = new ethers.JsonRpcProvider("https://rpc.tenderly.co/fork/a4579a6b-91ec-4ff0-b39d-3ff06733d685");
 
-    const contractAddress = '0x8B64968F69E669faCc86FA3484FD946f1bBE7c91';
+    const contractAddress = '0x8b64968f69e669facc86fa3484fd946f1bbe7c91';
           const contractABI = [
             {
               "inputs": [

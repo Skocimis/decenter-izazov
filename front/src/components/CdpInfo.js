@@ -1,6 +1,6 @@
 import "./cdpView.css";
 import { prettyFormat, formatBigNumber, formatOwner } from "../util/NumberFormat"
-import Tokens from "../data/Tokens.json"
+import { getTokenRatio, getTokenPriceSync } from "../util/Tokens.js"
 
 function CdpInfo({ cdp }) {
     const collateral = parseFloat(cdp?.collateral || 0)
@@ -8,10 +8,12 @@ function CdpInfo({ cdp }) {
     const token = cdp.token
     const owner = cdp.owner
 
-    const collateral_price = Tokens[token]?.price || 1;
+    const collateral_price = getTokenPriceSync(token);
+    console.log("COLLATERAL PRICE JE "+collateral_price)
     const collateral_value = collateral * collateral_price
+    console.log("COLLATERAL VALUE JE "+collateral_value)
     const ratio = ((debt > 0) ? (collateral_value / debt) : 0);
-    const liquidation_ratio = Tokens[token]?.ratio || 1;
+    const liquidation_ratio = getTokenRatio(token);
     const liquidation_price = (ratio && liquidation_ratio) ? collateral_price / (ratio / liquidation_ratio) : 0;
     const max_debt = collateral_value / liquidation_ratio;
     const max_borrow = max_debt - debt;
