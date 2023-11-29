@@ -1,11 +1,6 @@
 import "./cdpView.css";
 import { prettyFormat, formatBigNumber, formatOwner } from "../util/NumberFormat"
-
-const PRICING = {
-    "ETH-A": { price: 2049.20, ratio: 1.45 },
-    "WBTC-A": { price: 38194.63, ratio: 1.45 },
-    "USDC-A": { price: 1, ratio: 1.01 }
-}
+import { getTokenRatio, getTokenPriceSync } from "../util/Tokens.js"
 
 function CdpInfo({ cdp }) {
     const collateral = parseFloat(cdp?.collateral || 0)
@@ -13,10 +8,12 @@ function CdpInfo({ cdp }) {
     const token = cdp.token
     const owner = cdp.owner
 
-    const collateral_price = PRICING[token]?.price || 1;
+    const collateral_price = getTokenPriceSync(token);
+    console.log("COLLATERAL PRICE JE "+collateral_price)
     const collateral_value = collateral * collateral_price
+    console.log("COLLATERAL VALUE JE "+collateral_value)
     const ratio = ((debt > 0) ? (collateral_value / debt) : 0);
-    const liquidation_ratio = PRICING[token]?.ratio || 1;
+    const liquidation_ratio = getTokenRatio(token);
     const liquidation_price = (ratio && liquidation_ratio) ? collateral_price / (ratio / liquidation_ratio) : 0;
     const max_debt = collateral_value / liquidation_ratio;
     const max_borrow = max_debt - debt;

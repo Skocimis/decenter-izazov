@@ -10,7 +10,7 @@ async function main() {
     console.log("CDP View deployed to:", cdpView.target);
 
     try {
-        const cdpInfo = await cdpView.getCdpInfo(29886);
+        const cdpInfo = await cdpView.getCdpInfo(13153);
         console.log("Debt with interest:", getDebt(cdpInfo.debtWithInterest));
     } catch (error) {
         console.error("Error fetching CDP Info:", error);
