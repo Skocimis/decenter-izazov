@@ -43,7 +43,7 @@ function CdpDrawers({ cdp }) {
             }, 100);
             return () => { clearTimeout(timeout) }
         }, [cdp])
-        return <div style={{ zIndex: 2, position: "absolute", top: 0, right: marginRight, color: "white", width: "100%", marginRight: marginRight, backgroundColor: "#101010", transition: "right 0.4s", height: "100%", borderTopLeftRadius: "2%", borderBottomLeftRadius: "2%", padding: "2%", border: "2px solid rgb(178, 245, 101)" }}>
+        return <div style={{ zIndex: 2, position: "absolute", top: 0, right: marginRight, color: "white", width: "100%", marginRight: marginRight, backgroundColor: "#101010", transition: "right 0.4s", height: "100%",  padding: "2%", border: "3px solid rgb(178, 245, 101)" }}>
             <CdpPage cdp={cdp}></CdpPage>
         </div>
     }
@@ -54,7 +54,7 @@ function CdpDrawers({ cdp }) {
         if (!id) return null;
 
         return (
-            <div style={{ zIndex: back ? 1 : 2, position: "absolute", top: 0, right: marginRight, color: "white", width: "100%", backgroundColor: "#101010", transition: "right 0.4s", height: "100%", borderTopLeftRadius: "2%", borderBottomLeftRadius: "2%", padding: "2%", border: "2px solid rgb(178, 245, 101)" }}>
+            <div style={{ zIndex: back ? 1 : 2, position: "absolute", top: 0, right: marginRight, color: "white", width: "100%", backgroundColor: "#101010", transition: "right 0.4s", height: "100%",  padding: "2%", borderTo: "3px solid rgb(178, 245, 101)" }}>
                 <CdpPage cdp={cdp}></CdpPage>
             </div>
         );
