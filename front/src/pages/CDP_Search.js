@@ -6,6 +6,9 @@ import CdpSearchInput from '../components/CdpSearchInput';
 import Contract from '../data/Contract.json';
 import SearchLoader from '../components/SearchLoader';
 import CancelButton from '../components/CancelButton';
+import CdpDrawers from '../components/CdpDrawers';
+import {  formatBigNumber } from "../util/NumberFormat"
+import CdpPage from '../components/CdpPage';
 
 // Constants
 const tokens = ["ETH-A", "WBTC-A", "USDC-A"];
@@ -36,27 +39,29 @@ function weiToEthString(weiValue) {
 }
 
 function formatCurrency(value) {
-    let newValue = value;
-    const suffixes = ["", "k", "M", "B", "T"];
-    let suffixNum = 0;
+  let newValue = value;
+  const suffixes = ["", "k", "M", "B", "T"];
+  let suffixNum = 0;
 
-    while (newValue >= 1000) {
-      newValue /= 1000;
-      suffixNum++;
-    }
-
-    // For numbers less than 1000, show the original number
-    if (suffixNum === 0) {
-      return newValue.toString();
-    }
-
-    // Round the number to one decimal place and add the appropriate suffix
-    newValue = newValue.toPrecision(3);
-    newValue = parseFloat(newValue).toFixed(1); // Ensures one decimal place even when it's .0
-    return newValue + suffixes[suffixNum];
+  while (newValue >= 1000) {
+    newValue /= 1000;
+    suffixNum++;
   }
+
+  // For numbers less than 1000, show the original number
+  if (suffixNum === 0) {
+    return newValue.toString();
+  }
+
+  // Round the number to one decimal place and add the appropriate suffix
+  newValue = newValue.toPrecision(3);
+  newValue = parseFloat(newValue).toFixed(1); // Ensures one decimal place even when it's .0
+  return newValue + suffixes[suffixNum];
+}
 // Component
 function CDP_Search() {
+  const [screenWidth, setScreenWidth] = useState(window.visualViewport ? window.visualViewport.width : window.innerWidth);
+  const [openCDP, setOpenCDP] = useState(null);
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [roughCdpId, setRoughCdpId] = useState();
   const [positions, setPositions] = useState([]);
@@ -66,10 +71,23 @@ function CDP_Search() {
   const cdpIdOutOfRange = useRef(0);
   const queue = useRef(null);
   const last_pushed = useRef(-1);
+  const handleResize = () => {
+    if (window.visualViewport) {
+      // Use visualViewport width if available
+      setScreenWidth(window.visualViewport.width);
+    } else {
+      // Fallback to innerWidth if visualViewport is not supported
+      setScreenWidth(window.innerWidth);
+    }
+  };
 
   useEffect(() => {
+    window.addEventListener('resize', handleResize);
     queue.current = async.queue(fetch_position, 5);
-    return () => queue.current.kill();
+    return () => {
+      queue.current.kill()
+      window.removeEventListener('resize', handleResize);
+    }
   }, []);
 
   useEffect(() => {
@@ -114,12 +132,15 @@ function CDP_Search() {
       return;
     }
 
+    const owner = (currentPositionData.userAddr == "0x0000000000000000000000000000000000000000") ? currentPositionData.owner : currentPositionData.userAddr;
     const result = {
       id: data.id,
       collateral: weiToEthString(currentPositionData.collateral),
       amount: 1,
       debt: weiToEthString(currentPositionData.debtWithInterest),
-      relative: data.relative
+      relative: data.relative,
+      token: data.curToken,
+      owner
     };
 
     setPositions(e => {
@@ -144,7 +165,7 @@ function CDP_Search() {
       return arr;
     });
   }
-
+  console.log(screenWidth);
   const fetchData = async (id) => {
     try {
       if (window.ethereum) {
@@ -190,10 +211,10 @@ function CDP_Search() {
 
   const handleInputChange = (value, curToken) => {
     if (parseFloat(value) <= 0) {
-        alert('Must be greater than 0');
-        return;
-      }
-    
+      alert('Must be greater than 0');
+      return;
+    }
+
     setRoughCdpId(value);
     cdpIdOutOfRange.current = 0;
 
@@ -215,25 +236,25 @@ function CDP_Search() {
   async function getLastExistingCpId(cpId) {
     let low = 1;
     let high = cpId;
-  
+
     while (low <= high) {
       const mid = Math.floor((low + high) / 2);
       const data = await fetchData(mid);
-  
+
       if (data.urn !== '0x0000000000000000000000000000000000000000') {
         low = mid + 1;
       } else {
         high = mid - 1;
       }
     }
-  
+
     return high > 0 ? high : 0;
   }
 
-  function cancelSearch(){
+  function cancelSearch() {
     setLoading(false);
     setPositions([]);
-    cdpIdOutOfRange.current=0
+    cdpIdOutOfRange.current = 0
     if (queue.current) {
       queue.current.kill(); // This clears the queue
     }
@@ -258,7 +279,7 @@ function CDP_Search() {
             <div className="input-border input-border-alt"></div>
           </div>
           <CdpSearchInput roughCdpId={roughCdpId} setRoughCdpId={setRoughCdpId} handleInputChange={handleInputChange} curToken={selectedToken} />
-         {loading&&<CancelButton onClick={cancelSearch}/>}
+          {loading && <CancelButton onClick={cancelSearch} />}
         </div>
 
         <div className="cdp-div-center-middle">
@@ -271,20 +292,22 @@ function CDP_Search() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Collateral</th>
-                  <th>Collateral($)</th>
+                  {(screenWidth > 330) && <th>Collateral</th>}
+                  {(screenWidth > 930) && <th>Collateral($)</th>}
                   <th>Debt</th>
                   <th>Ratio</th>
                 </tr>
               </thead>
               <tbody>
                 {positions.map(position => (
-                  <tr key={position.id}>
+                  <tr onClick={() => {
+                    setOpenCDP((position.id == openCDP?.id) ? null : position);
+                  }} key={position.id} style={{ cursor: "pointer" }}>
                     <td>{position.id}</td>
-                    <td>{position.collateral + " " + selectedToken}</td>
-                    <td>{formatCurrency((position.collateral * tokenPrices[selectedToken]).toFixed(0))}$</td>
-                    <td>{position.debt + " DAI"}</td>
-                    <td>{position.debt > 0 ? (position.collateral * tokenPrices[selectedToken] / position.debt * 100).toFixed(2) : 0}%</td>
+                    {(screenWidth > 330) && <td>{formatBigNumber(position.collateral, 2)} {selectedToken}</td>}
+                    {(screenWidth > 930) && <td>{formatCurrency((position.collateral * tokenPrices[selectedToken]).toFixed(0))}$</td>}
+                    <td>{(() => { console.log(position.debt); })()}{formatBigNumber(position.debt, 2)} DAI</td>
+                    <td>{position.debt > 0 ? (position.collateral * tokenPrices[selectedToken] / position.debt * 100).toFixed(0) : 0}%</td>
                   </tr>
                 ))}
               </tbody>
@@ -297,6 +320,8 @@ function CDP_Search() {
       <div className='cdp-div-outer'>
         <br />
       </div>
+      {(screenWidth > 768) ? <CdpDrawers cdp={openCDP}></CdpDrawers> : null}
+      <CdpPage cdp={openCDP} isMobileNow={screenWidth <= 768} mobile={true} setOpenCDP={setOpenCDP}></CdpPage>
     </div>
   );
 }
