@@ -7,18 +7,13 @@ import Contract from '../data/Contract.json';
 import SearchLoader from '../components/SearchLoader';
 import CancelButton from '../components/CancelButton';
 import CdpDrawers from '../components/CdpDrawers';
-import {  formatBigNumber } from "../util/NumberFormat"
+import { formatBigNumber } from "../util/NumberFormat"
 import CdpPage from '../components/CdpPage';
+import Tokens from "../data/Tokens.json";
 
 // Constants
-const tokens = ["ETH-A", "WBTC-A", "USDC-A"];
+const tokens = Object.keys(Tokens);
 const POS_N = 20;
-
-const tokenPrices = {
-  "ETH-A": 2058.10,
-  "WBTC-A": 37488.41,
-  "USDC-A": 1
-};
 
 // Helper Functions
 function hexToAsciiStr(hexStr) {
@@ -32,32 +27,6 @@ function hexToAsciiStr(hexStr) {
   return asciiStr.replace(/[^\x20-\x7E]/g, '').trim();
 }
 
-function weiToEthString(weiValue) {
-  const WEI_PER_ETH = BigInt(1e18);
-  const ethValue = Number(weiValue) / Number(WEI_PER_ETH);
-  return ethValue.toFixed(2);
-}
-
-function formatCurrency(value) {
-  let newValue = value;
-  const suffixes = ["", "k", "M", "B", "T"];
-  let suffixNum = 0;
-
-  while (newValue >= 1000) {
-    newValue /= 1000;
-    suffixNum++;
-  }
-
-  // For numbers less than 1000, show the original number
-  if (suffixNum === 0) {
-    return newValue.toString();
-  }
-
-  // Round the number to one decimal place and add the appropriate suffix
-  newValue = newValue.toPrecision(3);
-  newValue = parseFloat(newValue).toFixed(1); // Ensures one decimal place even when it's .0
-  return newValue + suffixes[suffixNum];
-}
 // Component
 function CDP_Search() {
   const [screenWidth, setScreenWidth] = useState(window.visualViewport ? window.visualViewport.width : window.innerWidth);
@@ -135,9 +104,9 @@ function CDP_Search() {
     const owner = (currentPositionData.userAddr == "0x0000000000000000000000000000000000000000") ? currentPositionData.owner : currentPositionData.userAddr;
     const result = {
       id: data.id,
-      collateral: weiToEthString(currentPositionData.collateral),
+      collateral: Number(currentPositionData.collateral) / Number(1e18),
       amount: 1,
-      debt: weiToEthString(currentPositionData.debtWithInterest),
+      debt: Number(currentPositionData.debtWithInterest) / Number(1e18),
       relative: data.relative,
       token: data.curToken,
       owner
@@ -305,9 +274,9 @@ function CDP_Search() {
                   }} key={position.id} style={{ cursor: "pointer" }}>
                     <td>{position.id}</td>
                     {(screenWidth > 330) && <td>{formatBigNumber(position.collateral, 2)} {selectedToken}</td>}
-                    {(screenWidth > 930) && <td>{formatCurrency((position.collateral * tokenPrices[selectedToken]).toFixed(0))}$</td>}
+                    {(screenWidth > 930) && <td>{formatBigNumber(position.collateral * Tokens[selectedToken].price, 1)}$</td>}
                     <td>{(() => { console.log(position.debt); })()}{formatBigNumber(position.debt, 2)} DAI</td>
-                    <td>{position.debt > 0 ? (position.collateral * tokenPrices[selectedToken] / position.debt * 100).toFixed(0) : 0}%</td>
+                    <td>{position.debt > 0 ? (position.collateral * Tokens[selectedToken].price / position.debt * 100).toFixed(0) : 0}%</td>
                   </tr>
                 ))}
               </tbody>
