@@ -54,7 +54,7 @@ function CdpDrawers({ cdp }) {
         if (!id) return null;
 
         return (
-            <div style={{ zIndex: back ? 1 : 2, position: "absolute", top: 0, right: marginRight, color: "white", width: "100%", backgroundColor: "#101010", transition: "right 0.4s", height: "100%",  padding: "2%", borderTo: "3px solid rgb(178, 245, 101)" }}>
+            <div style={{ zIndex: back ? 1 : 2, position: "absolute", top: 0, right: marginRight, color: "white", width: "100%", backgroundColor: "#101010", transition: "right 0.4s", height: "100%",  padding: "2%", border: "3px solid rgb(178, 245, 101)" }}>
                 <CdpPage cdp={cdp}></CdpPage>
             </div>
         );
