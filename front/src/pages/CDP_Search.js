@@ -138,16 +138,10 @@ function CDP_Search() {
   }
   const fetchData = async (id) => {
     try {
-      if (window.ethereum) {
-        const web3 = new Web3(new Web3.providers.HttpProvider(Contract.rpcUrl));
-        const contract = new web3.eth.Contract(Contract.abi, Contract.address);
-        const data = await contract.methods.getCdpInfo(id).call();
-        return data;
-      } else {
-        alert("Activate Metamask to continue");
-        console.error('Metamask nije detektovan');
-        return
-      }
+      const web3 = new Web3(new Web3.providers.HttpProvider(Contract.rpcUrl));
+      const contract = new web3.eth.Contract(Contract.abi, Contract.address);
+      const data = await contract.methods.getCdpInfo(id).call();
+      return data;
     } catch (error) {
       console.error('Error fetching CDP data:', error);
     }
