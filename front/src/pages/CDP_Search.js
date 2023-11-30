@@ -139,12 +139,7 @@ function CDP_Search() {
   const fetchData = async (id) => {
     try {
       if (window.ethereum) {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [Contract.network]
-        });
-
-        const web3 = new Web3(window.ethereum);
+        const web3 = new Web3(new Web3.providers.HttpProvider(Contract.rpcUrl));
         const contract = new web3.eth.Contract(Contract.abi, Contract.address);
         const data = await contract.methods.getCdpInfo(id).call();
         return data;
