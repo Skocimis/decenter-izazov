@@ -9,9 +9,7 @@ function CdpInfo({ cdp }) {
     const owner = cdp.owner
 
     const collateral_price = getTokenPriceSync(token);
-    console.log("COLLATERAL PRICE JE "+collateral_price)
     const collateral_value = collateral * collateral_price
-    console.log("COLLATERAL VALUE JE "+collateral_value)
     const ratio = ((debt > 0) ? (collateral_value / debt) : 0);
     const liquidation_ratio = getTokenRatio(token);
     const liquidation_price = (ratio && liquidation_ratio) ? collateral_price / (ratio / liquidation_ratio) : 0;
